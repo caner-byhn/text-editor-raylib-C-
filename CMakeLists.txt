@@ -6,7 +6,7 @@ option(PRODUCTION_BUILD "Make this a production build" OFF)
 
 project(txt_editor)
 
-add_subdirectory(external/raylib-5.5)
+add_subdirectory(external/raylib)
 
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
