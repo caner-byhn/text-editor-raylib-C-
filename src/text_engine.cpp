@@ -46,6 +46,8 @@ void Editor::handleInput(){
     if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_LEFT)){
         jumpLeft();
     }
+
+    highlight();
 }
 
 void Editor::insertChar(char key){
@@ -84,11 +86,17 @@ void Editor::moveRight(){
     if(cursor.cursorChar < bound){
         cursor.pushCursorRight();
     }
+    if(!IsKeyDown(KEY_LEFT_SHIFT) && isSelecting){
+        isSelecting = false;
+    }
 }
 
 void Editor::moveLeft(){
     if(cursor.cursorChar > 0){
         cursor.pushCursorLeft();
+    }
+    if(!IsKeyDown(KEY_LEFT_SHIFT) && isSelecting){
+        isSelecting = false;
     }
 }
 
@@ -100,6 +108,9 @@ void Editor::moveDown(){
         if(textBuffer[cursor.cursorLine].length() < cursor.cursorChar)
             cursor.cursorChar = textBuffer[cursor.cursorLine].length();
     }
+    if(!IsKeyDown(KEY_LEFT_SHIFT) && isSelecting){
+        isSelecting = false;
+    }
 }
 
 void Editor::moveUp(){
@@ -107,6 +118,9 @@ void Editor::moveUp(){
         cursor.pushCursorUp();
         if(textBuffer[cursor.cursorLine].length() < cursor.cursorChar)
             cursor.cursorChar = textBuffer[cursor.cursorLine].length();
+    }
+    if(!IsKeyDown(KEY_LEFT_SHIFT) && isSelecting){
+        isSelecting = false;
     }
 }
 
@@ -213,6 +227,36 @@ void Editor::jumpLeft(){
         }
         if(i == 0){
             cursor.cursorChar = i;
+        }
+    }
+}
+
+void Editor::highlight(){
+    auto [cellWidth, cellHeight] = measureFont(font);
+
+    if(IsKeyDown(KEY_LEFT_SHIFT)){
+        if(!isSelecting){
+            anchorChar = cursor.cursorChar;
+            anchorLine = cursor.cursorLine;
+            isSelecting = true;
+        }
+    }
+    if(isSelecting){
+        float startX = cursor.startGridBuffer * cellWidth + (anchorChar * cellWidth);
+        float endX = cursor.startGridBuffer * cellWidth + (cursor.cursorChar * cellWidth);
+        
+        float rectX = std::min(startX, endX);
+
+        float rectWidth;
+        if(startX > endX)
+            rectWidth = std::abs(startX - endX) + cellWidth;
+        else
+            rectWidth = std::abs(startX -endX);
+        
+        float rectY = cursor.lineGap + (anchorLine * (cellHeight + cursor.lineGap));
+
+        if (rectWidth > 0) {
+            DrawRectangle(rectX, rectY, rectWidth, cellHeight, MAROON); 
         }
     }
 }

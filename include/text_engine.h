@@ -25,9 +25,13 @@ class Editor{
         void drawBuffer(Font myFont);
         void openFile();
         void keyRepeat(int key, float& timer);
+        void highlight();
 
     private:
         Cursor cursor;
         Font font;
         std::vector<std::string> textBuffer;
+        int anchorChar;
+        int anchorLine;
+        bool isSelecting;
 };
