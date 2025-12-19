@@ -17,7 +17,7 @@ float downTimer = 0.0f;
 
 
 Editor::Editor(Font font)
-    :font(font), cursor(font)
+    :font(font), cursor(font), isSelecting(false)
 {
     textBuffer = {""};
 }
@@ -39,6 +39,14 @@ void Editor::handleInput(){
         newLine();
     }
 
+    if(IsKeyPressed(KEY_END)){
+        cursor.cursorChar = textBuffer[cursor.cursorLine].size();
+    }
+
+    if(IsKeyPressed(KEY_HOME)){
+        cursor.cursorChar = 0;
+    }
+
     if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_RIGHT)){
         jumpRight();
     }
@@ -56,6 +64,18 @@ void Editor::insertChar(char key){
 }
 
 void Editor::deleteChar(){
+    if(isSelecting){
+        if(anchorChar > cursor.cursorChar){
+            textBuffer[cursor.cursorLine].erase(cursor.cursorChar,anchorChar+1);
+        }
+        if(anchorChar < cursor.cursorChar){
+            textBuffer[cursor.cursorLine].erase(anchorChar,cursor.cursorChar);
+            cursor.cursorChar = anchorChar;
+        }
+        isSelecting = false;
+        return;
+    }
+
     if(cursor.cursorChar > 0){
         if(cursor.cursorChar <= textBuffer[cursor.cursorLine].length())
             textBuffer[cursor.cursorLine].erase(cursor.cursorChar-1,1);
