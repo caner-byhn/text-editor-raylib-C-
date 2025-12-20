@@ -19,6 +19,7 @@ float downTimer = 0.0f;
 Editor::Editor(Font font)
     :font(font), cursor(font), isSelecting(false)
 {
+    path = "";
     textBuffer = {""};
 }
 
@@ -53,6 +54,16 @@ void Editor::handleInput(){
 
     if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_LEFT)){
         jumpLeft();
+    }
+
+    if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_O)){
+        openFile();
+        cursor.cursorChar = 0;
+        cursor.cursorLine = 0;
+    }
+
+    if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)){
+        saveFile();
     }
 
     highlight();
@@ -163,7 +174,14 @@ void Editor::drawBuffer(Font myFont){
 }
 
 void Editor::openFile(){
-    std::ifstream in("../test.txt");
+    path = textBuffer[cursor.cursorLine];
+
+    std::ifstream in(path);
+    if(!in) {
+        std::cout << "file could not be opened" << std::endl;
+        textBuffer = {""};
+        return;
+    }
     std::stringstream buffer;
     buffer << in.rdbuf();
     std::string contents(buffer.str());
@@ -187,6 +205,23 @@ void Editor::openFile(){
     }
     
     textBuffer = text;
+}
+
+void Editor::saveFile(){
+    if (path != "") {
+        std::ofstream out(path, std::ios::trunc);
+        if (!out) {
+            std::cout << "failed to locate opened file" << std::endl;
+            return;
+        }
+        for ( int i = 0; i < textBuffer.size(); i++) {
+            if (i < textBuffer.size() - 1)
+                out << textBuffer[i] << '\n';
+            else
+                out << textBuffer[i];
+        }
+        std::cout << "changes saved" << std::endl;
+    }
 }
 
 void Editor::keyRepeat(int key, float& timer){

@@ -1,3 +1,5 @@
 hello
 this is a random text
 so we can test the text editor.
+this is a new line
+this is another new line

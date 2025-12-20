@@ -16,8 +16,6 @@ int main(){
 
     bool activateGrid = false;
 
-
-    editor.openFile();
     while(!WindowShouldClose()){
         BeginDrawing();
             ClearBackground(GRAY);

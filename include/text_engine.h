@@ -24,11 +24,13 @@ class Editor{
         void jumpLeft();
         void drawBuffer(Font myFont);
         void openFile();
+        void saveFile();
         void keyRepeat(int key, float& timer);
         void highlight();
 
     private:
         Cursor cursor;
+        std::string path;
         Font font;
         std::vector<std::string> textBuffer;
         int anchorChar;
